@@ -9,6 +9,7 @@
         "semi": false,
         "tabSize": 2
       }
-    ]
+    ],
+    "camelcase": "off"
   }
 }

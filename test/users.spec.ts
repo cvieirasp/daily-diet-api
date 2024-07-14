@@ -72,13 +72,28 @@ describe('Users routes', () => {
     expect(response.body.message).toEqual('Internal server error')
   })
 
-  it('should create a new user and return status 201', async () => {
-    await request(app.server)
+  it('should create a new user with session and return status 201', async () => {
+    const response = await request(app.server)
       .post('/api/users')
       .send({
         name: 'Test Name',
         email: 'new@mail.com',
       })
       .expect(201)
+
+    const cookies = response.get('Set-Cookie')
+
+    expect(cookies).toEqual(
+      expect.arrayContaining([expect.stringContaining('sessionId')]),
+    )
+
+    const sessionId = cookies
+      ?.find((cookie) => cookie.includes('sessionId'))
+      ?.split(';')[0]
+      .split('=')[1]
+
+    expect(response.body).toEqual({
+      session_id: sessionId,
+    })
   })
 })

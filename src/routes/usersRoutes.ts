@@ -29,16 +29,28 @@ export const usersRoutes = async (app: FastifyInstance) => {
           .send({ message: 'User with email already exists' })
       }
 
+      let sessionId = request.cookies.sessionId
+
+      if (!sessionId) {
+        sessionId = randomUUID()
+
+        reply.setCookie('sessionId', sessionId, {
+          path: '/',
+          maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        })
+      }
+
       const user = await knex('users').insert(
         {
           id: randomUUID(),
           name,
           email,
+          session_id: sessionId,
         },
-        '*',
+        ['session_id'],
       )
 
-      return reply.status(201).send({ user: user[0] })
+      return reply.status(201).send(user[0])
     } catch (err) {
       console.error(err)
       return reply.status(500).send({ message: 'Internal server error' })

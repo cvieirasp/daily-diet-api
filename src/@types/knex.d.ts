@@ -7,7 +7,20 @@ declare module 'knex/types/tables' {
       id: string
       name: string
       email: string
+      session_id: string
       created_at: string
+      updated_at: string
+    }
+
+    meals: {
+      id: string
+      user_id: string
+      name: string
+      description: string
+      meal_date: number // unix timestamp
+      on_diet: boolean
+      created_at: string
+      updated_at: string
     }
   }
 }
