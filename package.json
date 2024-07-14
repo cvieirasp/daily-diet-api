@@ -5,7 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "lint": "eslint src --ext .ts --fix"
+    "make-migrate": "npx knex migrate:make",
+    "migrate-latest": "npx knex migrate:latest",
+    "migrate-rollback": "npx knex migrate:rollback",
+    "migrate-rollback-all": "npx knex migrate:rollback --all",
+    "lint": "eslint src --ext .ts --fix",
+    "build": "tsup src --out-dir build --minify",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -13,12 +20,20 @@
   "devDependencies": {
     "@rocketseat/eslint-config": "^2.2.2",
     "@types/node": "^20.14.10",
+    "@types/supertest": "^6.0.2",
     "eslint": "^8.57.0",
+    "supertest": "^7.0.0",
+    "tsup": "^8.1.0",
     "tsx": "^4.16.2",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.2"
   },
   "dependencies": {
     "@fastify/cookie": "^9.3.1",
-    "fastify": "^4.28.1"
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.1",
+    "knex": "^3.1.0",
+    "pg": "^8.12.0",
+    "zod": "^3.23.8"
   }
 }
