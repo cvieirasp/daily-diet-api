@@ -1,16 +1,31 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 import request from 'supertest'
-import { knex } from '../src/db'
 import app from '../src/app'
+import { knex } from '../src/db'
+
+const clearDB = async () => {
+  await knex('users').where('email', 'user@mail.com').del()
+}
 
 describe('Users routes', () => {
   beforeAll(async () => {
     await app.ready()
-    await knex('users').delete()
   })
 
   afterAll(async () => {
     await app.close()
+  })
+
+  beforeEach(async () => {
+    await clearDB()
   })
 
   it('should be return status 400 if name is empty', async () => {
@@ -18,7 +33,7 @@ describe('Users routes', () => {
       .post('/api/users')
       .send({
         name: '',
-        email: 'john.doe@mail.com',
+        email: 'user@mail.com',
       })
       .expect(400)
 
@@ -29,8 +44,8 @@ describe('Users routes', () => {
     const response = await request(app.server)
       .post('/api/users')
       .send({
-        name: 'John Doe',
-        email: 'invalid email',
+        name: 'User',
+        email: 'invalid_email',
       })
       .expect(400)
 
@@ -41,16 +56,16 @@ describe('Users routes', () => {
     await request(app.server)
       .post('/api/users')
       .send({
-        name: 'John Doe',
-        email: 'john.doe@mail.com',
+        name: 'User',
+        email: 'user@mail.com',
       })
       .expect(201)
 
     const response = await request(app.server)
       .post('/api/users')
       .send({
-        name: 'John Doe',
-        email: 'john.doe@mail.com',
+        name: 'User',
+        email: 'user@mail.com',
       })
       .expect(400)
 
@@ -60,12 +75,12 @@ describe('Users routes', () => {
   it('should be return status 500 if throw a error', async () => {
     const db = await import('../src/db')
     vi.spyOn(db, 'knex').mockImplementationOnce(() => {
-      throw new Error('Test Error')
+      throw new Error('Error creating user...')
     })
 
     const response = await request(app.server).post('/api/users').send({
-      name: 'John Doe',
-      email: 'john.doe@mail.com',
+      name: 'User',
+      email: 'user@mail.com',
     })
 
     expect(response.status).toBe(500)
@@ -76,8 +91,8 @@ describe('Users routes', () => {
     const response = await request(app.server)
       .post('/api/users')
       .send({
-        name: 'Test Name',
-        email: 'new@mail.com',
+        name: 'New User',
+        email: 'user@mail.com',
       })
       .expect(201)
 
